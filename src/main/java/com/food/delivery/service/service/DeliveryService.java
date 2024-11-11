@@ -54,7 +54,7 @@ public class DeliveryService {
         return Delivery.builder()
                 .orderId(deliveryDetails.getOrderId())
                 .deliveryPartnerId(deliveryDetails.getDeliveryPartnerId())
-                .status(deliveryDetails.getStatus().name())
+                .status(DeliveryStatus.valueOf(deliveryDetails.getStatus()).name())
                 .deliveredAt(deliveryDetails.getDeliveredAt())
                 .deliveryAddress(address)
                 .build();
@@ -62,7 +62,7 @@ public class DeliveryService {
     private DeliveryDetails createDeliveryPersistenceObject(Long orderId, Long deliveryPartnerId) {
         return DeliveryDetails.builder()
                 .orderId(orderId)
-                .status(DeliveryStatus.ASSIGNED)
+                .status(DeliveryStatus.ASSIGNED.name())
                 .deliveryPartnerId(deliveryPartnerId)
                 .createdAt(new Date())
                 .pickedUpAt(new Date())
@@ -70,10 +70,37 @@ public class DeliveryService {
     }
 
     public Delivery updateDeliveryStatus(Long orderId, DeliveryStatus status) {
-        return null;
+        DeliveryDetails delivery = deliveryDetailsRepository.findByOrderId(orderId);
+        if(delivery == null) {
+            throw new FoodDeliveryException("Delivery not found for Order ID: " + orderId, HttpStatus.NOT_FOUND);
+        }
+
+        // 2. Update the delivery status
+        delivery.setStatus(status.name());
+
+        // 3. Save the updated delivery object to the database
+        DeliveryDetails updatedDelivery = deliveryDetailsRepository.save(delivery);
+        Order order = orderServiceClient.getOrderDetails(orderId);
+        return convertToResponse(order.getAddress(), delivery);
     }
 
-    public String getDeliveryPersonLocationByPartnerId(Long deliveryPartnerId) {
-        return null;
+    public Delivery getDeliveryByDeliveryId(Long deliveryId) {
+        DeliveryDetails delivery = deliveryDetailsRepository.findByDeliveryId(deliveryId);
+
+        if(delivery == null) {
+            throw new FoodDeliveryException("Delivery not found for delivery ID: " + deliveryId, HttpStatus.BAD_REQUEST);
+        }
+
+        Order order = orderServiceClient.getOrderDetails(delivery.getOrderId());
+        return convertToResponse(order.getAddress(), delivery);
+    }
+
+    public Delivery getDeliveryByOrderId(Long orderId) {
+        DeliveryDetails delivery = deliveryDetailsRepository.findByOrderId(orderId);
+        if(delivery == null) {
+            throw new FoodDeliveryException("Delivery not found for Order ID: " + orderId, HttpStatus.NOT_FOUND);
+        }
+        Order order = orderServiceClient.getOrderDetails(orderId);
+        return convertToResponse(order.getAddress(), delivery);
     }
 }

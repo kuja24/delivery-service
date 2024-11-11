@@ -4,8 +4,8 @@ CREATE TABLE `fooddelivery`.`DELIVERY` (
   `delivery_partner_id` INT NOT NULL,
   `status` VARCHAR(500) NOT NULL,
   `created_at` TIMESTAMP NOT NULL,
-  `picked_up_at` TIMESTAMP NOT NULL,
-  `delivered_at` TIMESTAMP NOT NULL,
+  `picked_up_at` TIMESTAMP ,
+  `delivered_at` TIMESTAMP ,
   PRIMARY KEY (`delivery_id`, `status`),
   INDEX `order_id_idx` (`order_id` ASC) VISIBLE,
   INDEX `user_id_idx` (`delivery_partner_id` ASC) VISIBLE );

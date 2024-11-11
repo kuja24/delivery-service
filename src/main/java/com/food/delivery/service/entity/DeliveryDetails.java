@@ -21,11 +21,12 @@ public class DeliveryDetails {
     @Column(name = "delivery_id")
     private Long deliveryId;
 
+    @Column(name = "order_id")
     private Long orderId;
 
     private Long deliveryPartnerId;
 
-    private DeliveryStatus status;
+    private String status;
 
     private Date createdAt;
 

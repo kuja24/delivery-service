@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,12 +24,12 @@ public class DeliverPartnerDetailsController {
     }
 
     @GetMapping("/{deliveryPartnerId}/location")
-    @PreAuthorize("hasAnyAuthority('CUSTOMER','RESTAURANT_OWNER','ADMIN','DELIVERY_PARTNER')")
+    //@PreAuthorize("hasAnyAuthority('CUSTOMER','RESTAURANT_OWNER','ADMIN','DELIVERY_PARTNER')")
     @Operation(
             summary = "Get delivery partner location using delivery partner Id",
             description = "This endpoint allows to fetch delivery partner location given delivery partner id",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "String containing delivery partner's location coordinates"),
+                    @ApiResponse(responseCode = "200", description = "delivery partner's location as lat & long concatenated"),
                     @ApiResponse(responseCode = "500", description = "Internal Server Error",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorDetails.class)))
@@ -39,7 +40,17 @@ public class DeliverPartnerDetailsController {
     }
 
     @PostMapping
-    public ResponseEntity addDeliveryPartnerDetails(@RequestBody DeliveryPartnerDetails deliveryPartnerDetails) {
+    @Operation(
+            summary = "Add delivery partner details",
+            description = "This endpoint allows to add delivery partner details",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "successfully added delivery partner"),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorDetails.class)))
+            }
+    )
+    public ResponseEntity addDeliveryPartnerDetails(@RequestBody @Valid DeliveryPartnerDetails deliveryPartnerDetails) {
         deliveryPartnerDetailsService.addDeliveryPartnerDetails(deliveryPartnerDetails);
         return ResponseEntity.ok().build();
     }

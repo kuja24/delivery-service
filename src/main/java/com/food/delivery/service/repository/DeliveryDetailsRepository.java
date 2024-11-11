@@ -6,4 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DeliveryDetailsRepository extends JpaRepository<DeliveryDetails, Long> {
+
+    DeliveryDetails findByOrderId(Long orderId);
+
+    DeliveryDetails findByDeliveryId(Long deliveryId);
 }

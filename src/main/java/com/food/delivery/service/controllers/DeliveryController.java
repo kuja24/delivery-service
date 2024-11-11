@@ -21,18 +21,58 @@ public class DeliveryController {
         this.deliveryService = deliveryService;
     }
 
+    @GetMapping("/{deliveryId}")
+    @Operation(
+            summary = "Get Delivery for the given delivery id",
+            description = "This endpoint allows fetch delivery details by delivery id",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Delivery details"),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorDetails.class)))
+            }
+    )
+    public Delivery getDeliveryByDeliveryId(@PathParam("deliveryId") Long deliveryId) {
+        return deliveryService.getDeliveryByDeliveryId(deliveryId);
+    }
+
+    @GetMapping("/order/{orderId}")
+    @Operation(
+            summary = "Get Delivery for the given order id",
+            description = "This endpoint allows fetch delivery details by order id",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Delivery details"),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorDetails.class)))
+            }
+    )
+    public Delivery getDeliveryByOrderId(@PathParam("orderId") Long orderId) {
+        return deliveryService.getDeliveryByOrderId(orderId);
+    }
+
     @PostMapping("/{orderId}/assign")
+    @Operation(
+            summary = "Assign delivery partner for the given order id",
+            description = "This endpoint allows to calculate and assign available and closes delivery partner for an order",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Assigned and created delivery"),
+                    @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorDetails.class)))
+            }
+    )
     public Delivery assignDeliveryPerson(@PathParam("orderId") Long orderId) {
         return deliveryService.assignDeliveryPerson(orderId);
     }
 
     @PutMapping("/{orderId}/status")
-    @PreAuthorize("hasAnyAuthority('ADMIN','DELIVERY_PARTNER')")
+    //@PreAuthorize("hasAnyAuthority('ADMIN','DELIVERY_PARTNER')")
     @Operation(
             summary = "Update status of delivery",
             description = "This endpoint allows to update the status of delivery given the order Id",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "String containing delivery partner's location coordinates"),
+                    @ApiResponse(responseCode = "200", description = "updated delivery details"),
                     @ApiResponse(responseCode = "500", description = "Internal Server Error",
                             content = @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorDetails.class)))
