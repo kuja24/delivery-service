@@ -18,7 +18,7 @@ public class OrderServiceClient {
     }
 
     public Order getOrderDetails(Long orderId) {
-        String url = orderServiceUrl + "/orders/" + orderId + "/details";
+        String url = orderServiceUrl + "/orders/" + orderId;
         return restTemplate.getForObject(url, Order.class);
     }
 }
