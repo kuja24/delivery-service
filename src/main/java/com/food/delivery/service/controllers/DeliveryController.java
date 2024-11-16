@@ -8,12 +8,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.websocket.server.PathParam;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/delivery")
+@SecurityRequirement(name = "bearerAuth")
 public class DeliveryController {
     private final DeliveryService deliveryService;
 
@@ -22,6 +24,7 @@ public class DeliveryController {
     }
 
     @GetMapping("/{deliveryId}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER','RESTAURANT_OWNER','ADMIN','DELIVERY_PARTNER')")
     @Operation(
             summary = "Get Delivery for the given delivery id",
             description = "This endpoint allows fetch delivery details by delivery id",
@@ -37,6 +40,7 @@ public class DeliveryController {
     }
 
     @GetMapping("/order/{orderId}")
+    @PreAuthorize("hasAnyAuthority('CUSTOMER','RESTAURANT_OWNER','ADMIN','DELIVERY_PARTNER')")
     @Operation(
             summary = "Get Delivery for the given order id",
             description = "This endpoint allows fetch delivery details by order id",
@@ -52,6 +56,7 @@ public class DeliveryController {
     }
 
     @PostMapping("/{orderId}/assign")
+    @PreAuthorize("hasAnyAuthority('ADMIN','DELIVERY_PARTNER')")
     @Operation(
             summary = "Assign delivery partner for the given order id",
             description = "This endpoint allows to calculate and assign available and closes delivery partner for an order",
@@ -67,7 +72,7 @@ public class DeliveryController {
     }
 
     @PutMapping("/{orderId}/status")
-    //@PreAuthorize("hasAnyAuthority('ADMIN','DELIVERY_PARTNER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','DELIVERY_PARTNER')")
     @Operation(
             summary = "Update status of delivery",
             description = "This endpoint allows to update the status of delivery given the order Id",
